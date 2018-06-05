@@ -1,0 +1,17 @@
+# [[file:~/Workspace/Programming/pygchemol/pygchemol.note::a1bf1e62-2c8e-4da5-bf76-afd3e97c172b][a1bf1e62-2c8e-4da5-bf76-afd3e97c172b]]
+[package]
+name = "gchemol-python"
+version = "0.0.1"
+authors = ["Wenping Guo <ybyygu@gmail.com>"]
+
+[dependencies]
+error-chain = "*"
+
+[dependencies.pyo3]
+version = "0.2"
+features = ["extension-module"]
+
+[lib]
+name = "gchemol"
+crate-type = ["cdylib"]
+# a1bf1e62-2c8e-4da5-bf76-afd3e97c172b ends here
