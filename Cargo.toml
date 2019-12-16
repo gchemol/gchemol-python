@@ -1,17 +1,22 @@
-# [[file:~/Workspace/Programming/pygchemol/pygchemol.note::a1bf1e62-2c8e-4da5-bf76-afd3e97c172b][a1bf1e62-2c8e-4da5-bf76-afd3e97c172b]]
+# cargo
+
+# [[file:~/Workspace/Programming/gchemol-rs/python/pygchemol.note::*cargo][cargo:1]]
 [package]
-name = "gchemol-python"
+name = "pygchemol"
 version = "0.0.1"
+edition = "2018"
 authors = ["Wenping Guo <ybyygu@gmail.com>"]
 
 [dependencies]
-error-chain = "*"
+rayon = "1"
+octree = { path = "../octree" }
+vecfx = { git = "https://github.com/gchemol/vecfx.git" }
 
 [dependencies.pyo3]
-version = "0.2"
+version = "0.8"
 features = ["extension-module"]
 
 [lib]
-name = "gchemol"
+name = "pygchemol"
 crate-type = ["cdylib"]
-# a1bf1e62-2c8e-4da5-bf76-afd3e97c172b ends here
+# cargo:1 ends here
