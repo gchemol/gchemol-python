@@ -22,10 +22,16 @@ impl Molecule {
         Ok(Self { inner })
     }
 
-    /// Dump molecule object in json format.
-    fn to_json(&self) -> PyResult<()> {
+    /// Return its json representation of molecule object.
+    fn to_json(&self) -> PyResult<String> {
         let json = gchemol::io::to_json(&self.inner)?;
-        println!("{json}");
+        Ok(json)
+    }
+
+    /// Write molecule to file with `path`. The molecule format will
+    /// be determined based on file name extension.
+    fn to_file(&self, path: String) -> PyResult<()> {
+        self.inner.to_file(&path)?;
         Ok(())
     }
 
