@@ -1,17 +1,23 @@
-# [[file:~/Workspace/Programming/pygchemol/pygchemol.note::a1bf1e62-2c8e-4da5-bf76-afd3e97c172b][a1bf1e62-2c8e-4da5-bf76-afd3e97c172b]]
+# [[file:pygchemol.note::e405e081][e405e081]]
 [package]
 name = "gchemol-python"
-version = "0.0.1"
+version = "0.0.2"
+edition = "2021"
 authors = ["Wenping Guo <ybyygu@gmail.com>"]
 
 [dependencies]
-error-chain = "*"
+rayon = "1"
+octree = { path = "../octree" }
+vecfx = { version="0.1", features = ["nalgebra"] }
+gchemol = { version = "0.0.42", features=["adhoc"] }
+gut = {version="0.4", package="gchemol-gut"}
 
 [dependencies.pyo3]
-version = "0.2"
-features = ["extension-module"]
+version = "0.17.3"
+# features = ["extension-module", "hashbrown", "num-bigint", "num-complex", "indexmap"]
+features = ["extension-module", "anyhow"]
 
 [lib]
 name = "gchemol"
 crate-type = ["cdylib"]
-# a1bf1e62-2c8e-4da5-bf76-afd3e97c172b ends here
+# e405e081 ends here
