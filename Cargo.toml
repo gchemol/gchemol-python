@@ -1,7 +1,7 @@
 # [[file:pygchemol.note::e405e081][e405e081]]
 [package]
 name = "gchemol-python"
-version = "0.0.2"
+version = "0.1.0"
 edition = "2021"
 authors = ["Wenping Guo <ybyygu@gmail.com>"]
 
@@ -9,13 +9,13 @@ authors = ["Wenping Guo <ybyygu@gmail.com>"]
 rayon = "1"
 octree = { path = "../octree" }
 vecfx = { version="0.1", features = ["nalgebra"] }
-gchemol = { version = "0.0.42", features=["adhoc"] }
+gchemol = { version = "0.1", features=["adhoc"] }
 gut = {version="0.4", package="gchemol-gut"}
 
 [dependencies.pyo3]
 version = "0.17.3"
 # features = ["extension-module", "hashbrown", "num-bigint", "num-complex", "indexmap"]
-features = ["extension-module", "anyhow"]
+features = ["extension-module", "anyhow", "abi3-py39"]
 
 [lib]
 name = "gchemol"
