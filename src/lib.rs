@@ -1,52 +1,89 @@
-// lib.rs
-// :PROPERTIES:
-// :header-args: :tangle src/lib.rs
-// :END:
-
-// [[file:~/Workspace/Programming/gchemol-rs/python/pygchemol.note::*lib.rs][lib.rs:1]]
-use octree::Octree;
+// [[file:../pygchemol.note::57ba050b][57ba050b]]
 use pyo3::prelude::*;
-use rayon::prelude::*;
-use vecfx::*;
+// 57ba050b ends here
 
-type Point = [f64; 3];
+// [[file:../pygchemol.note::8fc5b8be][8fc5b8be]]
+use gchemol::prelude::*;
+use gchemol::Molecule;
 
-// logic implemented as a normal rust function
-fn octree_search(points: &[Point], bucket_size: usize, cutoff: f64) -> Vec<Vec<(usize, f64)>> {
-    let mut tree = Octree::new(points.to_vec());
-    tree.build(bucket_size);
-
-    points
-        .par_iter()
-        .map(|&q| {
-            let x: Vec<_> = tree.search(q, cutoff).collect();
-            x
-        })
-        .collect()
+#[pyclass(mapping, module = "pygchemol", subclass)]
+// #[pyo3(text_signature = "(/, multigraph=True, attrs=None)")]
+#[derive(Clone)]
+pub struct PyMolecule {
+    inner: Molecule,
+    // #[pyo3(get, set)]
+    // pub attrs: PyObject,
 }
 
-// add bindings to the generated python module
-// N.B: names: "librust2py" must be the name of the `.so` or `.pyd` file
-/// This module is implemented in Rust.
+#[pymethods]
+impl PyMolecule {
+    // #[new]
+    // // NOTE: set default python argument
+    // // #[args(multigraph = "true")]
+    // fn new(py: Python, attrs: Option<PyObject>) -> Self {
+    //     Self {
+    //         attrs: attrs.unwrap_or_else(|| py.None()),
+    //     }
+    // }
+
+    /// Construct `Molecule` object from a file `path`. If the file
+    /// contains multiple molecules, only the last one will be read.
+    #[staticmethod]
+    fn from_file(py: Python, path: String) -> PyResult<Self> {
+        let inner = Molecule::from_file(&path)?;
+        Ok(Self { inner })
+    }
+
+    /// Add a new node to the graph.
+    ///
+    /// :param obj: The python object to attach to the node
+    ///
+    /// :returns: The index of the newly created node
+    /// :rtype: int
+    #[pyo3(text_signature = "(self, obj, /)")]
+    fn add_atom(&mut self, obj: PyObject) -> PyResult<()> {
+        println!("add one node");
+        Ok(())
+    }
+
+    /// Dump molecule object in json format.
+    fn to_json(&self) -> PyResult<()> {
+        let json = gchemol::io::to_json(&self.inner)?;
+        println!("{json}");
+        Ok(())
+    }
+
+    /// Get the number of atoms.
+    fn natoms(&self) -> PyResult<usize> {
+        let n = self.inner.natoms();
+        Ok(n)
+    }
+
+    /// Return chemical formula.
+    fn formula(&self) -> PyResult<String> {
+        Ok(self.inner.formula())
+    }
+
+    /// Unbuild current crystal structure leaving a nonperiodic structure
+    fn unbuild_crystal(&self) -> PyResult<()> {
+        self.unbuild_crystal();
+        Ok(())
+    }
+
+    /// Get the number of bonds.
+    fn nbonds(&self) -> PyResult<usize> {
+        let n = self.inner.nbonds();
+        Ok(n)
+    }
+}
+// 8fc5b8be ends here
+
+// [[file:../pygchemol.note::ec553356][ec553356]]
 #[pymodule]
 fn pygchemol(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
-    // PyO3 aware function. All of our python interfaces could be declared in a separate module.
-    // Note that the `#[pyfn()]` annotation automatically converts the arguments from
-    // Python objects to Rust values; and the Rust return value back into a Python object.
-    /// xxx
-    /// Parameters
-    /// ----------
-    /// - points: List
-    /// - pt: list
-    #[pyfn(m, "octree_search")]
-    fn octree_search_py(_py: Python, points: Vec<f64>) -> PyResult<Vec<Vec<(usize, f64)>>> {
-        let points = points.as_3d();
-        let bucket_size = 64;
-        let cutoff = 3.0;
-        let out = octree_search(points, bucket_size, cutoff);
-        Ok(out)
-    }
+    m.add("__version__", env!("CARGO_PKG_VERSION"))?;
+    m.add_class::<PyMolecule>()?;
 
     Ok(())
 }
-// lib.rs:1 ends here
+// ec553356 ends here

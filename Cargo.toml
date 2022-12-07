@@ -1,22 +1,22 @@
-# cargo
-
-# [[file:~/Workspace/Programming/gchemol-rs/python/pygchemol.note::*cargo][cargo:1]]
+# [[file:pygchemol.note::e405e081][e405e081]]
 [package]
 name = "pygchemol"
 version = "0.0.1"
-edition = "2018"
+edition = "2021"
 authors = ["Wenping Guo <ybyygu@gmail.com>"]
 
 [dependencies]
 rayon = "1"
 octree = { path = "../octree" }
-vecfx = { git = "https://github.com/gchemol/vecfx.git" }
+vecfx = { version="0.1", features = ["nalgebra"] }
+gchemol = { version = "0.0.42", features=["adhoc"] }
 
 [dependencies.pyo3]
-version = "0.8"
-features = ["extension-module"]
+version = "0.17.3"
+# features = ["extension-module", "hashbrown", "num-bigint", "num-complex", "indexmap"]
+features = ["extension-module", "anyhow"]
 
 [lib]
 name = "pygchemol"
 crate-type = ["cdylib"]
-# cargo:1 ends here
+# e405e081 ends here
