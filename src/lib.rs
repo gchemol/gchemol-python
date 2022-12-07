@@ -29,6 +29,18 @@ impl Molecule {
         Ok(json)
     }
 
+    /// Clean up molecule geometry using stress majorization algorithm.
+    fn clean(&mut self) -> PyResult<()> {
+        self.inner.clean()?;
+        Ok(())
+    }
+
+    /// Renumber atoms consecutively from 1.
+    fn renumber(&mut self) -> PyResult<()> {
+        self.inner.renumber();
+        Ok(())
+    }
+
     /// Write molecule to file with `path`. The molecule format will
     /// be determined based on file name extension.
     fn to_file(&self, path: String) -> PyResult<()> {
@@ -57,6 +69,21 @@ impl Molecule {
     /// Get the number of bonds.
     fn nbonds(&self) -> PyResult<usize> {
         let n = self.inner.nbonds();
+        Ok(n)
+    }
+
+    /// Return the name of the molecule, which is typpically modified
+    /// for safely storing in various chemical file formats.
+    fn title(&self) -> PyResult<String> {
+        let t = self.inner.title();
+        Ok(t)
+    }
+
+    /// Return the shortest distance counted in number of chemical
+    /// bonds between two atoms. Return None if they are not
+    /// connected.
+    fn nbonds_between(&self, i: usize, j: usize) -> PyResult<Option<usize>> {
+        let n = self.inner.nbonds_between(i, j);
         Ok(n)
     }
 
@@ -98,6 +125,61 @@ impl Molecule {
     fn rebond(&mut self) -> PyResult<()> {
         self.inner.rebond();
         Ok(())
+    }
+
+    /// Removes all existing bonds between atoms.
+    fn unbound(&mut self) -> PyResult<()> {
+        self.inner.unbound();
+        Ok(())
+    }
+
+    /// Removes all bonds between two selections to respect pymol's
+    /// unbond command.
+    ///
+    /// # Parameters
+    ///
+    /// * atom_indices1: the first collection of atoms
+    /// * atom_indices2: the other collection of atoms
+    ///
+    /// # Reference
+    ///
+    /// * <https://pymolwiki.org/index.php/Unbond>
+    ///
+    fn unbond(&mut self, atom_indices1: Vec<usize>, atom_indices2: Vec<usize>) -> PyResult<()> {
+        self.inner.unbond(&atom_indices1, &atom_indices2);
+        Ok(())
+    }
+
+    /// Center the molecule around its center of geometry.
+    fn recenter(&mut self) -> PyResult<()> {
+        self.inner.recenter();
+        Ok(())
+    }
+
+    /// Return the distance between atom i and atom j. For periodic
+    /// structure, this method will return the distance under the
+    /// minimum image convention.
+    fn distance(&self, i: usize, j: usize) -> PyResult<f64> {
+        let d = self.inner.distance(i, j);
+        Ok(d)
+    }
+
+    /// Return molecule’s inertia matrix (3x3) in reference to molecule’s center of mass
+    fn inertia_matrix(&self) -> PyResult<[[f64; 3]; 3]> {
+        let im = self.inner.inertia_matrix();
+        Ok(im)
+    }
+
+    /// Return the center of mass of molecule (COM).
+    fn center_of_mass(&self) -> PyResult<[f64; 3]> {
+        let com = self.inner.center_of_mass();
+        Ok(com)
+    }
+
+    /// Return the center of geometry of molecule (COG).
+    fn center_of_geometry(&self) -> PyResult<[f64; 3]> {
+        let cog = self.inner.center_of_geometry();
+        Ok(cog)
     }
 }
 // 8fc5b8be ends here
