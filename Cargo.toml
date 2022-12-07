@@ -10,6 +10,7 @@ rayon = "1"
 octree = { path = "../octree" }
 vecfx = { version="0.1", features = ["nalgebra"] }
 gchemol = { version = "0.0.42", features=["adhoc"] }
+gut = {version="0.4", package="gchemol-gut"}
 
 [dependencies.pyo3]
 version = "0.17.3"

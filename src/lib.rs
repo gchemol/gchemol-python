@@ -5,6 +5,7 @@ use pyo3::prelude::*;
 // [[file:../pygchemol.note::8fc5b8be][8fc5b8be]]
 use gchemol::prelude::*;
 use gchemol::Molecule as GMolecule;
+use gut::prelude::*;
 
 #[pyclass(mapping, module = "gchemol", subclass)]
 #[derive(Clone)]
@@ -35,6 +36,13 @@ impl Molecule {
         Ok(())
     }
 
+    /// Render molecule with template file from `path`. On success,
+    /// return the formatted string.
+    fn render_with(&self, path: String) -> PyResult<String> {
+        let s = self.inner.render_with(path.as_ref())?;
+        Ok(s)
+    }
+
     /// Get the number of atoms.
     fn natoms(&self) -> PyResult<usize> {
         let n = self.inner.natoms();
@@ -56,6 +64,32 @@ impl Molecule {
     fn unbuild_crystal(&mut self) -> PyResult<()> {
         self.inner.unbuild_crystal();
         Ok(())
+    }
+
+    /// Create a Lattice from the minimal bounding box of the Molecule
+    /// extended by a positive value of padding.
+    ///
+    /// NOTE: padding has to be large enough (> 0.5) to avoid self
+    /// interaction with its periodic mirror.
+    fn set_lattice_from_bounding_box(&mut self, padding: f64) -> PyResult<()> {
+        self.inner.set_lattice_from_bounding_box(padding);
+        Ok(())
+    }
+
+    /// Create a supercell version of new molecule.
+    ///
+    /// # Arguments
+    ///
+    /// * sa, sb, sc: an sequence of three scaling factors. E.g., [2,
+    /// 1, 1] specifies that the supercell should have dimensions 2a x
+    /// b x c
+    fn supercell(&mut self, sa: usize, sb: usize, sc: usize) -> PyResult<Self> {
+        if let Some(mol) = self.inner.supercell(sa, sb, sc) {
+            let m = Self { inner: mol };
+            Ok(m)
+        } else {
+            Err(pyo3::exceptions::PyException::new_err("not allowed for periodic structure"))
+        }
     }
 
     /// Recalculates all bonds in molecule based on interatomic
