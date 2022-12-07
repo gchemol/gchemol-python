@@ -1,6 +1,6 @@
 # [[file:pygchemol.note::e405e081][e405e081]]
 [package]
-name = "pygchemol"
+name = "gchemol-python"
 version = "0.0.2"
 edition = "2021"
 authors = ["Wenping Guo <ybyygu@gmail.com>"]
