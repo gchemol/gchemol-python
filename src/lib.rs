@@ -182,6 +182,17 @@ impl Molecule {
         Ok(cog)
     }
 
+    /// Set freezing flag to `freezed` for atom `sn` when in
+    /// optimization or dynamic simulation.
+    fn freeze_atom(&mut self, sn: usize, freezed: bool) -> PyResult<()> {
+        if let Some(a) = self.inner.get_atom_mut(sn) {
+            a.set_freezing([freezed; 3]);
+            Ok(())
+        } else {
+            Err(pyo3::exceptions::PyException::new_err("atom {sn} not found"))
+        }
+    }
+
     /// Get ONIOM layer of atom `sn`. If no layer information was set,
     /// will return `H`.
     fn get_oniom_layer(&self, sn: usize) -> PyResult<String> {
