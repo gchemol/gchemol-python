@@ -181,6 +181,35 @@ impl Molecule {
         let cog = self.inner.center_of_geometry();
         Ok(cog)
     }
+
+    /// Get ONIOM layer of atom `sn`. If no layer information was set,
+    /// will return `H`.
+    fn get_oniom_layer(&self, sn: usize) -> PyResult<String> {
+        use gchemol::io::formats::GaussianInputFile;
+
+        if let Some(a) = self.inner.get_atom(sn) {
+            let extra = GaussianInputFile::extra_atom_info(a);
+            let l = extra.get_oniom_layer().unwrap_or("H");
+            Ok(l.to_owned())
+        } else {
+            Err(pyo3::exceptions::PyException::new_err("atom {sn} not found"))
+        }
+    }
+
+    /// Set ONIOM layer of atom `sn` to `layer` for Gaussian
+    /// calculation. Possible layer includes `H`, `M`, `L`
+    fn set_oniom_layer(&mut self, sn: usize, layer: &str) -> PyResult<()> {
+        use gchemol::io::formats::GaussianInputFile;
+
+        if let Some(a) = self.inner.get_atom_mut(sn) {
+            let mut extra = GaussianInputFile::extra_atom_info(a);
+            extra.set_oniom_layer(layer);
+            extra.attach(a);
+            Ok(())
+        } else {
+            Err(pyo3::exceptions::PyException::new_err("atom {sn} not found"))
+        }
+    }
 }
 // 8fc5b8be ends here
 
