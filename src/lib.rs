@@ -221,6 +221,12 @@ impl Molecule {
             Err(pyo3::exceptions::PyException::new_err("atom {sn} not found"))
         }
     }
+
+    /// Find rings up to `nmax` atoms in `Molecule`.
+    fn find_rings(&mut self, nmax: usize) -> PyResult<Vec<std::collections::HashSet<usize>>> {
+        let rings = self.inner.find_rings(nmax);
+        Ok(rings)
+    }
 }
 // 8fc5b8be ends here
 
