@@ -150,12 +150,6 @@ impl Molecule {
         Ok(())
     }
 
-    /// Center the molecule around its center of geometry.
-    fn recenter(&mut self) -> PyResult<()> {
-        self.inner.recenter();
-        Ok(())
-    }
-
     /// Return the distance between atom i and atom j. For periodic
     /// structure, this method will return the distance under the
     /// minimum image convention.
