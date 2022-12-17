@@ -150,12 +150,6 @@ impl Molecule {
         Ok(())
     }
 
-    /// Center the molecule around its center of geometry.
-    fn recenter(&mut self) -> PyResult<()> {
-        self.inner.recenter();
-        Ok(())
-    }
-
     /// Return the distance between atom i and atom j. For periodic
     /// structure, this method will return the distance under the
     /// minimum image convention.
@@ -180,6 +174,52 @@ impl Molecule {
     fn center_of_geometry(&self) -> PyResult<[f64; 3]> {
         let cog = self.inner.center_of_geometry();
         Ok(cog)
+    }
+
+    /// Set freezing flag to `freezed` for atom `sn` when in
+    /// optimization or dynamic simulation.
+    fn freeze_atom(&mut self, sn: usize, freezed: bool) -> PyResult<()> {
+        if let Some(a) = self.inner.get_atom_mut(sn) {
+            a.set_freezing([freezed; 3]);
+            Ok(())
+        } else {
+            Err(pyo3::exceptions::PyException::new_err("atom {sn} not found"))
+        }
+    }
+
+    /// Get ONIOM layer of atom `sn`. If no layer information was set,
+    /// will return `H`.
+    fn get_oniom_layer(&self, sn: usize) -> PyResult<String> {
+        use gchemol::io::formats::GaussianInputFile;
+
+        if let Some(a) = self.inner.get_atom(sn) {
+            let extra = GaussianInputFile::extra_atom_info(a);
+            let l = extra.get_oniom_layer().unwrap_or("H");
+            Ok(l.to_owned())
+        } else {
+            Err(pyo3::exceptions::PyException::new_err("atom {sn} not found"))
+        }
+    }
+
+    /// Set ONIOM layer of atom `sn` to `layer` for Gaussian
+    /// calculation. Possible layer includes `H`, `M`, `L`
+    fn set_oniom_layer(&mut self, sn: usize, layer: &str) -> PyResult<()> {
+        use gchemol::io::formats::GaussianInputFile;
+
+        if let Some(a) = self.inner.get_atom_mut(sn) {
+            let mut extra = GaussianInputFile::extra_atom_info(a);
+            extra.set_oniom_layer(layer);
+            extra.attach(a);
+            Ok(())
+        } else {
+            Err(pyo3::exceptions::PyException::new_err("atom {sn} not found"))
+        }
+    }
+
+    /// Find rings up to `nmax` atoms in `Molecule`.
+    fn find_rings(&mut self, nmax: usize) -> PyResult<Vec<std::collections::HashSet<usize>>> {
+        let rings = self.inner.find_rings(nmax);
+        Ok(rings)
     }
 }
 // 8fc5b8be ends here
